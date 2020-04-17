@@ -26,22 +26,18 @@ static double autoLockIntervals[7][2] = {{20, 30}, {40, 60}, {100, 120}, {160, 1
 		if(customLockscreenAutoLockInterval)
 			newInterval = autoLockIntervalsLockscreen[customLockscreenAutoLockInterval];
 	}
-	else if([[%c(SBUIController) sharedInstance] isBatteryCharging])
-	{
-		if(customChargingAutoLockInterval)
-			newInterval = autoLockIntervals[chargingAutoLockInterval][0];
-	}
-	else if([[NSProcessInfo processInfo] isLowPowerModeEnabled])
-	{
-		if(customLowPowerAutoLockInterval)
-			newInterval = autoLockIntervals[lowPowerAutoLockInterval][0];
-	}
 	else
 	{
-		if(customDefaultAutoLockInterval)
+		if([[%c(SBUIController) sharedInstance] isBatteryCharging] && customChargingAutoLockInterval)
+			newInterval = autoLockIntervals[chargingAutoLockInterval][0];
+		
+		if(newInterval == 0 && [[NSProcessInfo processInfo] isLowPowerModeEnabled] && customLowPowerAutoLockInterval)
+			newInterval = autoLockIntervals[lowPowerAutoLockInterval][0];
+
+		if(newInterval == 0 && customDefaultAutoLockInterval)
 			newInterval = autoLockIntervals[defaultAutoLockInterval][0];
 	}
-
+	
 	return (newInterval > 0) ? newInterval : %orig;
 }
 
@@ -54,19 +50,15 @@ static double autoLockIntervals[7][2] = {{20, 30}, {40, 60}, {100, 120}, {160, 1
 		if(customLockscreenAutoLockInterval)
 			newInterval = autoLockIntervalsLockscreen[customLockscreenAutoLockInterval];
 	}
-	else if([[%c(SBUIController) sharedInstance] isBatteryCharging])
-	{
-		if(customChargingAutoLockInterval)
-			newInterval = autoLockIntervals[chargingAutoLockInterval][1];
-	}
-	else if([[NSProcessInfo processInfo] isLowPowerModeEnabled])
-	{
-		if(customLowPowerAutoLockInterval)
-			newInterval = autoLockIntervals[lowPowerAutoLockInterval][1];
-	}
 	else
 	{
-		if(customDefaultAutoLockInterval)
+		if([[%c(SBUIController) sharedInstance] isBatteryCharging] && customChargingAutoLockInterval)
+			newInterval = autoLockIntervals[chargingAutoLockInterval][1];
+		
+		if(newInterval == 0 && [[NSProcessInfo processInfo] isLowPowerModeEnabled] && customLowPowerAutoLockInterval)
+			newInterval = autoLockIntervals[lowPowerAutoLockInterval][1];
+
+		if(newInterval == 0 && customDefaultAutoLockInterval)
 			newInterval = autoLockIntervals[defaultAutoLockInterval][1];
 	}
 
