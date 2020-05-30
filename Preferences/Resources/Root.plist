@@ -19,10 +19,11 @@
 			<string>The Following Settings Override Any System Setting You Have Set.
 
 The Priority Of The Checks Is: 
-1) 'Lock Screen Has Not Been Dismissed' Value
-2) 'Battery Is Charging' Value
-3) 'Low Power Mode Is Enabled' Value
-4) 'Default' Value
+1) 'Lock Screen Is Locked' Value
+2) 'Lock Screen Has Not Been Dismissed' Value
+3) 'Battery Is Charging' Value
+4) 'Low Power Mode Is Enabled' Value
+5) 'Default' Value
 
 On Some Occasions It Might Take A Bit More To Lock The Device Than The Selected Time.</string>
         </dict>
@@ -42,7 +43,7 @@ On Some Occasions It Might Take A Bit More To Lock The Device Than The Selected 
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>LOCK SCREEN - IF HAS NOT BEEN DISMISSED</string>
+			<string>LOCK SCREEN - IF IT HAS NOT BEEN UNLOCKED</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -52,9 +53,9 @@ On Some Occasions It Might Take A Bit More To Lock The Device Than The Selected 
 			<key>defaults</key>
 			<string>com.johnzaro.customautolockintervalprefs</string>
 			<key>key</key>
-			<string>customLockscreenAutoLockInterval</string>
+			<string>customLockscreenLockedAutoLockInterval</string>
 			<key>label</key>
-			<string>Custom Lock Screen Duration</string>
+			<string>Custom Locked Duration</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -64,9 +65,10 @@ On Some Occasions It Might Take A Bit More To Lock The Device Than The Selected 
 			<key>defaults</key>
 			<string>com.johnzaro.customautolockintervalprefs</string>
 			<key>key</key>
-			<string>lockScreenAutoLockInterval</string>
+			<string>lockScreenLockedAutoLockInterval</string>
 			<key>validTitles</key>
 			<array>
+      			<string>5 Sec</string>
       			<string>10 Sec</string>
       			<string>20 Sec</string>
       			<string>30 Sec</string>
@@ -76,9 +78,50 @@ On Some Occasions It Might Take A Bit More To Lock The Device Than The Selected 
       			<string>0</string>
       			<string>1</string>
       			<string>2</string>
+      			<string>3</string>
 			</array>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Lock Screen Duration</string>
+			<string>LOCK SCREEN - IF IT HAS NOT BEEN DISMISSED</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.johnzaro.customautolockintervalprefs</string>
+			<key>key</key>
+			<string>customLockscreenNotDismissedAutoLockInterval</string>
+			<key>label</key>
+			<string>Custom Not Dismissed Duration</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<integer>0</integer>
+			<key>defaults</key>
+			<string>com.johnzaro.customautolockintervalprefs</string>
+			<key>key</key>
+			<string>lockScreenNotDismissedAutoLockInterval</string>
+			<key>validTitles</key>
+			<array>
+      			<string>5 Sec</string>
+      			<string>10 Sec</string>
+      			<string>20 Sec</string>
+      			<string>30 Sec</string>
+			</array>
+      		<key>validValues</key>
+			<array>
+      			<string>0</string>
+      			<string>1</string>
+      			<string>2</string>
+      			<string>3</string>
+			</array>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -127,8 +170,6 @@ On Some Occasions It Might Take A Bit More To Lock The Device Than The Selected 
 				<string>5</string>
 				<string>6</string>
 			</array>
-			<key>label</key>
-			<string>Interval</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -177,8 +218,6 @@ On Some Occasions It Might Take A Bit More To Lock The Device Than The Selected 
 				<string>5</string>
 				<string>6</string>
 			</array>
-			<key>label</key>
-			<string>Interval</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -227,8 +266,6 @@ On Some Occasions It Might Take A Bit More To Lock The Device Than The Selected 
 				<string>5</string>
 				<string>6</string>
 			</array>
-			<key>label</key>
-			<string>Interval</string>
 		</dict>
 		<dict>
         	<key>cell</key>

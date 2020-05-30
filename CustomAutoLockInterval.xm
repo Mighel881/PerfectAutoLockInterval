@@ -3,66 +3,60 @@
 
 static HBPreferences *pref;
 static BOOL enabled;
-static BOOL customLockscreenAutoLockInterval;
+static BOOL customLockscreenLockedAutoLockInterval;
+static BOOL customLockscreenNotDismissedAutoLockInterval;
 static BOOL customDefaultAutoLockInterval;
 static BOOL customChargingAutoLockInterval;
 static BOOL customLowPowerAutoLockInterval;
-static int lockScreenAutoLockInterval;
-static int defaultAutoLockInterval;
-static int chargingAutoLockInterval;
-static int lowPowerAutoLockInterval;
+static NSInteger lockScreenLockedAutoLockInterval;
+static NSInteger lockScreenNotDismissedAutoLockInterval;
+static NSInteger defaultAutoLockInterval;
+static NSInteger chargingAutoLockInterval;
+static NSInteger lowPowerAutoLockInterval;
 
-static double autoLockIntervalsLockscreen[3] = {10, 20, 30};
+static double autoLockIntervalsLockscreen[4] = {5, 10, 20, 30};
 static double autoLockIntervals[7][2] = {{20, 30}, {40, 60}, {100, 120}, {160, 180}, {220, 240}, {280, 300}, {DBL_MAX, DBL_MAX}};
 
 %hook SBIdleTimerDescriptor
 
 - (double)warnInterval
 {
-	double newInterval = 0;
+	if([[%c(SBCoverSheetPresentationManager) sharedInstance] _isEffectivelyLocked] && customLockscreenLockedAutoLockInterval)
+		return autoLockIntervalsLockscreen[lockScreenLockedAutoLockInterval];
 
-	if(![[%c(SBCoverSheetPresentationManager) sharedInstance] hasBeenDismissedSinceKeybagLock])
-	{
-		if(customLockscreenAutoLockInterval)
-			newInterval = autoLockIntervalsLockscreen[customLockscreenAutoLockInterval];
-	}
-	else
-	{
-		if([[%c(SBUIController) sharedInstance] isBatteryCharging] && customChargingAutoLockInterval)
-			newInterval = autoLockIntervals[chargingAutoLockInterval][0];
-		
-		if(newInterval == 0 && [[NSProcessInfo processInfo] isLowPowerModeEnabled] && customLowPowerAutoLockInterval)
-			newInterval = autoLockIntervals[lowPowerAutoLockInterval][0];
-
-		if(newInterval == 0 && customDefaultAutoLockInterval)
-			newInterval = autoLockIntervals[defaultAutoLockInterval][0];
-	}
+	if(![[%c(SBCoverSheetPresentationManager) sharedInstance] hasBeenDismissedSinceKeybagLock] && customLockscreenNotDismissedAutoLockInterval)
+		return autoLockIntervalsLockscreen[lockScreenNotDismissedAutoLockInterval];
 	
-	return (newInterval > 0) ? newInterval : %orig;
+	if([[%c(SBUIController) sharedInstance] isBatteryCharging] && customChargingAutoLockInterval)
+		return autoLockIntervals[chargingAutoLockInterval][0];
+	
+	if([[NSProcessInfo processInfo] isLowPowerModeEnabled] && customLowPowerAutoLockInterval)
+		return autoLockIntervals[lowPowerAutoLockInterval][0];
+
+	if(customDefaultAutoLockInterval)
+		return autoLockIntervals[defaultAutoLockInterval][0];
+	
+	return %orig;
 }
 
 - (double)totalInterval
 {
-	double newInterval = 0;
+	if([[%c(SBCoverSheetPresentationManager) sharedInstance] _isEffectivelyLocked] && customLockscreenLockedAutoLockInterval)
+		return autoLockIntervalsLockscreen[lockScreenLockedAutoLockInterval];
 
-	if(![[%c(SBCoverSheetPresentationManager) sharedInstance] hasBeenDismissedSinceKeybagLock])
-	{
-		if(customLockscreenAutoLockInterval)
-			newInterval = autoLockIntervalsLockscreen[customLockscreenAutoLockInterval];
-	}
-	else
-	{
-		if([[%c(SBUIController) sharedInstance] isBatteryCharging] && customChargingAutoLockInterval)
-			newInterval = autoLockIntervals[chargingAutoLockInterval][1];
-		
-		if(newInterval == 0 && [[NSProcessInfo processInfo] isLowPowerModeEnabled] && customLowPowerAutoLockInterval)
-			newInterval = autoLockIntervals[lowPowerAutoLockInterval][1];
+	if(![[%c(SBCoverSheetPresentationManager) sharedInstance] hasBeenDismissedSinceKeybagLock] && customLockscreenNotDismissedAutoLockInterval)
+		return autoLockIntervalsLockscreen[lockScreenNotDismissedAutoLockInterval];
+	
+	if([[%c(SBUIController) sharedInstance] isBatteryCharging] && customChargingAutoLockInterval)
+		return autoLockIntervals[chargingAutoLockInterval][1];
+	
+	if([[NSProcessInfo processInfo] isLowPowerModeEnabled] && customLowPowerAutoLockInterval)
+		return autoLockIntervals[lowPowerAutoLockInterval][1];
 
-		if(newInterval == 0 && customDefaultAutoLockInterval)
-			newInterval = autoLockIntervals[defaultAutoLockInterval][1];
-	}
-
-	return (newInterval > 0) ? newInterval : %orig;
+	if(customDefaultAutoLockInterval)
+		return autoLockIntervals[defaultAutoLockInterval][1];
+	
+	return %orig;
 }
 
 %end
@@ -75,11 +69,13 @@ static double autoLockIntervals[7][2] = {{20, 30}, {40, 60}, {100, 120}, {160, 1
 		[pref registerDefaults:
 		@{
 			@"enabled": @NO,
-			@"customLockscreenAutoLockInterval": @NO,
+			@"customLockscreenLockedAutoLockInterval": @NO,
+			@"customLockscreenNotDismissedAutoLockInterval": @NO,
 			@"customDefaultAutoLockInterval": @NO,
 			@"customChargingAutoLockInterval": @NO,
 			@"customLowPowerAutoLockInterval": @NO,
-			@"lockScreenAutoLockInterval": @0,
+			@"lockScreenLockedAutoLockInterval": @0,
+			@"lockScreenNotDismissedAutoLockInterval": @0,
 			@"defaultAutoLockInterval": @1,
 			@"chargingAutoLockInterval": @1,
 			@"lowPowerAutoLockInterval": @0,
@@ -88,12 +84,14 @@ static double autoLockIntervals[7][2] = {{20, 30}, {40, 60}, {100, 120}, {160, 1
 		enabled = [pref boolForKey: @"enabled"];
 		if(enabled)
 		{
-			customLockscreenAutoLockInterval = [pref boolForKey: @"customLockscreenAutoLockInterval"];
+			customLockscreenLockedAutoLockInterval = [pref boolForKey: @"customLockscreenLockedAutoLockInterval"];
+			customLockscreenNotDismissedAutoLockInterval = [pref boolForKey: @"customLockscreenNotDismissedAutoLockInterval"];
 			customDefaultAutoLockInterval = [pref boolForKey: @"customDefaultAutoLockInterval"];
 			customChargingAutoLockInterval = [pref boolForKey: @"customChargingAutoLockInterval"];
 			customLowPowerAutoLockInterval = [pref boolForKey: @"customLowPowerAutoLockInterval"];
 
-			lockScreenAutoLockInterval = [pref integerForKey: @"lockScreenAutoLockInterval"];
+			lockScreenLockedAutoLockInterval = [pref integerForKey: @"lockScreenLockedAutoLockInterval"];
+			lockScreenNotDismissedAutoLockInterval = [pref integerForKey: @"lockScreenNotDismissedAutoLockInterval"];
 			defaultAutoLockInterval = [pref integerForKey: @"defaultAutoLockInterval"];
 			chargingAutoLockInterval = [pref integerForKey: @"chargingAutoLockInterval"];
 			lowPowerAutoLockInterval = [pref integerForKey: @"lowPowerAutoLockInterval"];
