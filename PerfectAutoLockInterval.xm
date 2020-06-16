@@ -1,4 +1,4 @@
-#import "CustomAutoLockInterval.h"
+#import "PerfectAutoLockInterval.h"
 #import <Cephei/HBPreferences.h>
 
 static HBPreferences *pref;

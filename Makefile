@@ -6,10 +6,10 @@ INSTALL_TARGET_PROCESSES = SpringBoard
 
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = CustomAutoLockInterval
-CustomAutoLockInterval_FILES = CustomAutoLockInterval.xm
-CustomAutoLockInterval_CFLAGS = -fobjc-arc
-CustomAutoLockInterval_EXTRA_FRAMEWORKS += Cephei
+TWEAK_NAME = PerfectAutoLockInterval
+PerfectAutoLockInterval_FILES = PerfectAutoLockInterval.xm
+PerfectAutoLockInterval_CFLAGS = -fobjc-arc
+PerfectAutoLockInterval_EXTRA_FRAMEWORKS += Cephei
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
